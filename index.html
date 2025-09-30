@@ -33,14 +33,6 @@
             border-bottom: 1px solid #30363d;
             padding-bottom: 1rem;
         }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #8b949e;
-        }
         input {
             width: 100%;
             padding: 0.75rem;
@@ -50,7 +42,11 @@
             border-radius: 4px;
             color: #c9d1d9;
             font-size: 1rem;
-            box-sizing: border-box; /* Important for padding */
+            box-sizing: border-box;
+        }
+        input:disabled {
+            background-color: #222;
+            cursor: not-allowed;
         }
         button {
             width: 100%;
@@ -64,8 +60,10 @@
             cursor: pointer;
             transition: background-color 0.2s;
         }
-        button:hover {
-            background-color: #2ea043;
+        button:disabled {
+            background-color: #555;
+            border-color: #777;
+            cursor: not-allowed;
         }
         #message {
             margin-top: 1.5rem;
@@ -81,40 +79,52 @@
     <div class="terminal">
         <div class="terminal-header">AETHER CORP. MAINFRAME</div>
         <div class="form-group">
-            <label for="passwordInput">&gt; Enter Security PIN:</label>
-            <input type="password" id="passwordInput" maxlength="5" autofocus>
+            <label for="passwordInput">&gt; Enter 4-Digit Security PIN:</label>
+            <input type="password" id="passwordInput" maxlength="4" autofocus>
         </div>
-        <button onclick="checkPassword()">EXECUTE</button>
+        <button id="executeButton" onclick="checkPassword()">EXECUTE</button>
         <p id="message"></p>
     </div>
 
     <script>
-        // The hash is the same, representing the password '83910'.
-        const correctPasswordHash = '5eee9aac457a64b9e65f06d03cb69155c3412f2caab709cc91dc3902942ed573';
+        // The new hash for the 4-digit PIN '2025' WITHOUT any salt.
+        const correctPasswordHash = 'b2b2f104d32c638903e151a9b20d6e27b41d8c0c84cf8458738f83ca2f1dd744';
+        // The salt variable has been removed.
 
         function checkPassword() {
             const userInput = document.getElementById('passwordInput').value;
             const messageElement = document.getElementById('message');
+            const button = document.getElementById('executeButton');
+            const inputField = document.getElementById('passwordInput');
 
+            button.disabled = true;
+
+            // --- THIS IS THE CHANGE: Hashing the input directly ---
             const userInputHash = CryptoJS.SHA256(userInput).toString();
 
             if (userInputHash === correctPasswordHash) {
-                // SUCCESS! Redirect to the secret page.
+                // SUCCESS!
                 messageElement.textContent = 'ACCESS GRANTED. REDIRECTING...';
                 messageElement.style.color = '#3fb950';
+                inputField.disabled = true;
+
                 setTimeout(() => {
                     window.location.href = 'success.html';
-                }, 1000); // Wait 1 second before redirecting
+                }, 1000);
             } else {
-                // FAILURE! Show an error message.
+                // FAILURE!
                 messageElement.textContent = 'ERROR: AUTHENTICATION FAILED.';
-                messageElement.style.color = '#f85149';
+                messageElement.style.color = 'red';
+
+                setTimeout(() => {
+                    button.disabled = false;
+                    messageElement.textContent = '';
+                }, 100); // 100ms rate limit
             }
         }
         
-        // Allow pressing Enter to submit
         document.getElementById('passwordInput').addEventListener('keyup', function(event) {
-            if (event.key === "Enter") {
+            if (event.key === "Enter" && !document.getElementById('executeButton').disabled) {
                 checkPassword();
             }
         });
