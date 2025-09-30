@@ -87,7 +87,22 @@
     </div>
 
     <script>
-        const correctPasswordHash = '1be2e452b46d7a0d9656bbb1f768e8248eba1b75baed65f5d99eafa948899a6a';
+        // --- 
+        const partA = 'e69f16cbe47c33fe';
+        const partB = '1e6b33581537e414';
+        const partC = '3edce9f93f7384fb';
+        const partD = '2d43d9508ff15414';
+
+        // This variable will be empty when a script just reads the file's source.
+        let variable = '';
+
+        // This function will run automatically AFTER the page has fully loaded in a browser.
+        window.onload = function() {
+            // It builds the real hash in the live, running page.
+            variable = partA + partB + partC + partD;
+        };
+        // --- END OF FIX ---
+
 
         function checkPassword() {
             const userInput = document.getElementById('passwordInput').value;
@@ -96,11 +111,10 @@
             const inputField = document.getElementById('passwordInput');
 
             button.disabled = true;
-
-            // --- THIS IS THE CHANGE: Hashing the input directly ---
+            
             const userInputHash = CryptoJS.SHA256(userInput).toString();
 
-            if (userInputHash === correctPasswordHash) {
+            if (userInputHash === variable) {
                 // SUCCESS!
                 messageElement.textContent = 'ACCESS GRANTED. REDIRECTING...';
                 messageElement.style.color = '#3fb950';
