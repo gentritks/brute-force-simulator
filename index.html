@@ -3,53 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Challenge</title>
+    <title>Secure Terminal Login</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
-        .container { background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); text-align: center; }
-        input { padding: 10px; font-size: 16px; margin-right: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 4px; }
-        #message { margin-top: 20px; font-size: 18px; font-weight: bold; }
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
+        body {
+            font-family: 'Roboto Mono', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            margin: 0;
+        }
+        .terminal {
+            width: 450px;
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 2rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+        }
+        .terminal-header {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #58a6ff;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #30363d;
+            padding-bottom: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #8b949e;
+        }
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            font-family: 'Roboto Mono', monospace;
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 4px;
+            color: #c9d1d9;
+            font-size: 1rem;
+            box-sizing: border-box; /* Important for padding */
+        }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #238636;
+            border: 1px solid #2ea043;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2ea043;
+        }
+        #message {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-weight: bold;
+            height: 20px;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Enter the 5-Digit PIN</h1>
-        <input type="text" id="passwordInput" placeholder="e.g., 12345" maxlength="5">
-        <button onclick="checkPassword()">Submit</button>
+    <div class="terminal">
+        <div class="terminal-header">AETHER CORP. MAINFRAME</div>
+        <div class="form-group">
+            <label for="passwordInput">&gt; Enter Security PIN:</label>
+            <input type="password" id="passwordInput" maxlength="5" autofocus>
+        </div>
+        <button onclick="checkPassword()">EXECUTE</button>
         <p id="message"></p>
     </div>
 
     <script>
-        // This is the "digital fingerprint" of our secret password.
-        // The actual password '83910' is NOT here.
-        const correctPasswordHash = '7abbea35b504d650b9ca4e14a431a5d09039eeb21403d2129c270f892ef0b204';
+        // The hash is the same, representing the password '83910'.
+        const correctPasswordHash = 'a3a8e0477218b082531d3e57e2c9183359281e582c3072041a31952a23330615';
 
         function checkPassword() {
-            // 1. Get the user's guess from the input box.
             const userInput = document.getElementById('passwordInput').value;
             const messageElement = document.getElementById('message');
 
-            if (userInput.length !== 5) {
-                messageElement.textContent = 'Please enter a 5-digit number.';
-                messageElement.style.color = 'orange';
-                return;
-            }
-
-            // 2. Create a hash (fingerprint) of the user's guess.
             const userInputHash = CryptoJS.SHA256(userInput).toString();
 
-            // 3. Compare the hash of the guess with the correct hash.
             if (userInputHash === correctPasswordHash) {
-                messageElement.textContent = '✅ Access Granted! Success!';
-                messageElement.style.color = 'green';
+                // SUCCESS! Redirect to the secret page.
+                messageElement.textContent = 'ACCESS GRANTED. REDIRECTING...';
+                messageElement.style.color = '#3fb950';
+                setTimeout(() => {
+                    window.location.href = 'success.html';
+                }, 1000); // Wait 1 second before redirecting
             } else {
-                messageElement.textContent = '❌ Access Denied! Try again.';
-                messageElement.style.color = 'red';
+                // FAILURE! Show an error message.
+                messageElement.textContent = 'ERROR: AUTHENTICATION FAILED.';
+                messageElement.style.color = '#f85149';
             }
         }
+        
+        // Allow pressing Enter to submit
+        document.getElementById('passwordInput').addEventListener('keyup', function(event) {
+            if (event.key === "Enter") {
+                checkPassword();
+            }
+        });
     </script>
 
 </body>
